@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Nexa Tools – Etsy kapcsolat</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:system-ui,-apple-system,Segoe UI,sans-serif; background:#0f1220; color:#f4f4f7; }
+    main { width:min(560px,calc(100% - 32px)); padding:28px; border:1px solid #2d3248; border-radius:18px; background:#171b2e; box-shadow:0 20px 60px rgba(0,0,0,.35); }
+    h1 { margin-top:0; font-size:1.35rem; }
+    p { line-height:1.55; color:#c9cee3; }
+    .ok { color:#b9f6c7; }
+    .error { color:#ffb4b4; }
+    a { display:inline-block; margin-top:10px; padding:10px 14px; border-radius:10px; background:#6f5cff; color:white; text-decoration:none; font-weight:600; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Nexa Tools – Etsy hitelesítés</h1>
+  <p id="status">Az Etsy hitelesítés eredményének továbbítása a helyi Nexa Tools alkalmazásnak…</p>
+  <a id="openLocal" href="#" hidden>Nexa Tools megnyitása</a>
+</main>
+<script>
+(() => {
+  const params = new URLSearchParams(window.location.search);
+  const status = document.getElementById("status");
+  const openLocal = document.getElementById("openLocal");
+  const allowed = ["code","state","error","error_description"];
+  const out = new URLSearchParams();
+
+  for (const key of allowed) {
+    const value = params.get(key);
+    if (value !== null) out.set(key, value);
+  }
+
+  if (!out.has("code") && !out.has("error")) {
+    status.textContent = "Hiányzik az Etsy hitelesítési válasza. Indítsd a kapcsolódást a Nexa Toolsból.";
+    status.className = "error";
+    return;
+  }
+
+  const localUrl = "http://localhost:8788/oauth/etsy/callback?" + out.toString();
+  openLocal.href = localUrl;
+  openLocal.hidden = false;
+
+  if (out.has("error")) {
+    status.textContent = "Az Etsy hitelesítés hibával tért vissza. A részleteket továbbítom a Nexa Toolsnak.";
+    status.className = "error";
+  } else {
+    status.textContent = "Sikeres Etsy visszahívás. Visszairányítás a Nexa Tools alkalmazásba…";
+    status.className = "ok";
+  }
+
+  setTimeout(() => window.location.replace(localUrl), 500);
+})();
+</script>
+</body>
+</html>
