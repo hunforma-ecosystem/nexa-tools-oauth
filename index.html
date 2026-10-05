@@ -41,7 +41,7 @@
     return;
   }
 
-  const localUrl = "http://localhost:8788/oauth/etsy/callback?" + out.toString();
+  const localUrl = "http://localhost:8788/api/etsy/oauth/callback?" + out.toString();
   openLocal.href = localUrl;
   openLocal.hidden = false;
 
